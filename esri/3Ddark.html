@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no">
+		<title>西安小寨-暗色三维</title>
+		<!--cdn-->
+		<link rel="stylesheet" href="https://js.arcgis.com/4.11/esri/themes/light/main.css">
+		<style>
+			html,
+			body,
+			#viewDiv {
+				padding: 0;
+				margin: 0;
+				height: 100%;
+				width: 100%;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="viewDiv"></div>
+	</body>
+	<!--cdn-->
+	<script src="https://js.arcgis.com/4.11/"></script>
+	<script>
+		require([
+			"esri/Map",
+			"esri/views/MapView",
+			"esri/views/SceneView",
+			"esri/layers/TileLayer",
+			"esri/layers/FeatureLayer",
+			"esri/layers/MapImageLayer"
+		], function(Map, MapView, SceneView, TileLayer, FeatureLayer, MapImageLayer) {
+
+			var arcgisIP = "https://xz.csceccloud.net:10000/arcgis/rest/";
+			//切片图层
+			var myTileLayer = new TileLayer({
+				url: arcgisIP + "services/xiaozhaimap_dark/MapServer",
+			});
+			//点图片样式
+			var bikeTrailsRenderer = {
+				type: "simple",
+				symbol: {
+					type: "picture-marker",
+					url: "http://static.arcgis.com/images/Symbols/NPS/npsPictograph_0231b.png",
+					width: "18px",
+					height: "18px"
+				}
+			};
+			//文字样式
+			var trailheadsLabels = {
+				symbol: {
+					type: "text",
+					color: "#00aae5",
+					haloColor: "#fff",
+					haloSize: "2px",
+					font: {
+						size: "16px",
+						family: "Noto Sans",
+						//style: "italic",
+						weight: "normal"
+					}
+				},
+				labelPlacement: "above-center",
+				labelExpressionInfo: {
+					expression: "$feature.Name"
+				}
+			};
+
+			//矢量图层
+			var featureLayer = new FeatureLayer({
+				url: arcgisIP + "services/xiaozhaimap_dark/MapServer/37",
+				//renderer: bikeTrailsRenderer,
+				labelingInfo: [trailheadsLabels],
+				opacity: 0,
+				//maxScale: 5000,
+				//minScale: 100000
+				//definitionExpression: "objectid <100",
+				//screenSizePerspectiveEnabled :true
+			});
+
+			var renderer = {
+				type: "unique-value", // autocasts as new UniqueValueRenderer()
+				defaultSymbol: {
+					type: "polygon-3d", // autocasts as new PolygonSymbol3D()
+					symbolLayers: [{
+						type: "extrude", // autocasts as new ExtrudeSymbol3DLayer()
+						material: {
+							color: "#b4e0ff"
+						},
+						edges: {
+							type: "solid",
+							color: "#70a8cf",
+							size: 0.5
+						}
+					}]
+				},
+				visualVariables: [{
+					type: "size",
+					field: "height",
+					valueUnit: "feet" // "unknown","inches", "feet", "yards", "miles", "nautical-miles", "millimeters", "centimeters", "decimeters", "meters", "kilometers", "decimal-degrees"
+				}]
+			};
+
+			//建筑矢量图层
+			var featureLayerBuilding = new FeatureLayer({
+				url: arcgisIP + "services/xiaozhaimap_dark/MapServer/48",
+				renderer: renderer,
+				// maxScale: 4000,
+				minScale: 10000
+			});
+
+			//动态地图
+			var mapImageLayer = new MapImageLayer({
+				url: arcgisIP + "services/xiaozhaimap_dark/MapServer",
+			});
+
+			var map = new Map({
+				// basemap: "streets",
+				// basemap: "topo-vector",
+				// ground: "world-elevation"
+			});
+			map.add(myTileLayer);
+			// map.add(mapImageLayer);
+			map.add(featureLayer);
+			map.add(featureLayerBuilding);
+
+			var view = new SceneView({
+				container: "viewDiv",
+				map: map,
+				camera: {
+					position: { // observation point
+						x: 108.948301,
+						y: 34.223445,
+						z: 500 // altitude in meters
+					},
+					tilt: 65 // perspective in degrees
+				}
+			});
+			view.when(function() {
+				console.log("loaded");
+			}, function(error) {
+				console.error("The view's resources failed to load: ", error);
+			});
+
+			view.on("mouse-wheel", function(event) {
+				console.log(view.scale);
+			});
+		});
+	</script>
+</html>

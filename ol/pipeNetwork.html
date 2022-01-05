@@ -1,0 +1,239 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<title>小寨ol-管网</title>
+		<link rel="stylesheet"
+			href="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.4.3/css/ol.css"
+			type="text/css">
+		<script src="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.4.3/build/ol.js"></script>
+		<!-- <script src="https://viglino.github.io/ol-ext/dist/ol-ext.js"></script> -->
+		<!-- <script src="./ol-ext.min.js"></script> -->
+		<script src="https://cdn.bootcdn.net/ajax/libs/jquery/1.10.0/jquery.min.js"></script>
+		<style>
+			html,
+			body,
+			.map {
+				height: 100%;
+				width: 100%;
+				margin: 0;
+				padding: 0
+			}
+
+			.ol-popup {
+				position: absolute;
+				background-color: white;
+				box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+				padding: 15px;
+				border-radius: 10px;
+				border: 1px solid #cccccc;
+				bottom: 12px;
+				left: -50px;
+				min-width: 150px;
+			}
+
+			.ol-popup:after,
+			.ol-popup:before {
+				top: 100%;
+				border: solid transparent;
+				content: " ";
+				height: 0;
+				width: 0;
+				position: absolute;
+				pointer-events: none;
+			}
+
+			.ol-popup:after {
+				border-top-color: white;
+				border-width: 10px;
+				left: 48px;
+				margin-left: -10px;
+			}
+
+			.ol-popup:before {
+				border-top-color: #cccccc;
+				border-width: 11px;
+				left: 48px;
+				margin-left: -11px;
+			}
+
+			.ol-popup-closer {
+				text-decoration: none;
+				position: absolute;
+				top: 2px;
+				right: 8px;
+			}
+
+			.ol-popup-closer:after {
+				content: "✖";
+			}
+
+			#popup-content div {
+				color: #000;
+			}
+
+			#popup-content div span {
+				color: #00f;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="map" class="map"></div>
+		<div id="popup" class="ol-popup">
+			<a href="#" id="popup-closer" class="ol-popup-closer"></a>
+			<div id="popup-content"></div>
+		</div>
+		<script type="text/javascript">
+			var basePath = 'https://xz.csceccloud.net:10000/arcgis/rest'
+			var urlTile = basePath + '/services/xiaozhaimap_dark/MapServer';
+			var serviceUrl = urlTile + '/48/';
+			var serviceUrlPipeNetwork = basePath + '/services/xiaozha/mx_pipe_network_properties/MapServer/0/query'
+			var osmLayer = new ol.layer.Tile({
+				source: new ol.source.OSM(),
+			});
+			var imageLayer = new ol.layer.Image({
+				source: new ol.source.ImageArcGISRest({
+					url: urlTile,
+				}),
+			});
+			var tileLayer = new ol.layer.Tile({
+				source: new ol.source.TileArcGISRest({
+					url: urlTile,
+				}),
+			});
+			var xyzLayer = new ol.layer.Tile({
+				source: new ol.source.XYZ({
+					url: urlTile + '/tile/{z}/{y}/{x}'
+				})
+			});
+
+
+			/**
+			 * Elements that make up the popup.
+			 */
+			var popup_container = document.getElementById('popup');
+			var popup_content = document.getElementById('popup-content');
+			var popup_closer = document.getElementById('popup-closer');
+
+			/**
+			 * Create an overlay to anchor the popup to the map.
+			 */
+			var popup_overlay = new ol.Overlay({
+				element: popup_container,
+				autoPan: true,
+				autoPanAnimation: {
+					duration: 250,
+				},
+			});
+
+			/**
+			 * Add a click handler to hide the popup.
+			 * @return {boolean} Don't follow the href.
+			 */
+			popup_closer.onclick = function() {
+				popup_overlay.setPosition(undefined);
+				popup_closer.blur();
+				return false;
+			};
+
+			// 管线数据
+			var stylePipeNetwork = {
+				'1': new ol.style.Style({
+					stroke: new ol.style.Stroke({
+						color: 'rgba(255, 0, 0, 1)',
+						width: 3,
+					}),
+				}),
+				'2': new ol.style.Style({
+					stroke: new ol.style.Stroke({
+						color: 'rgba(0, 255, 0, 1)',
+						width: 3,
+					}),
+				}),
+				'3': new ol.style.Style({
+					stroke: new ol.style.Stroke({
+						color: 'rgba(255, 255, 0,  1)',
+						width: 3,
+					}),
+				})
+			};
+			var vectorSourcePipeNetwork = new ol.source.Vector({
+				format: new ol.format.EsriJSON(),
+				url: (extent) => {
+					return (
+						serviceUrlPipeNetwork +
+						'?f=json&returnGeometry=true&spatialRel=esriSpatialRelIntersects&geometry=' +
+						encodeURIComponent(
+							'{"xmin":' +
+							extent[0] +
+							',"ymin":' +
+							extent[1] +
+							',"xmax":' +
+							extent[2] +
+							',"ymax":' +
+							extent[3] +
+							',"spatialReference":{"wkid":102100}}'
+						) +
+						'&geometryType=esriGeometryEnvelope&inSR=102100&outFields=*' +
+						'&outSR=102100'
+					);
+				},
+				strategy: ol.loadingstrategy.bbox
+			});
+
+			var vectorLayerPipeNetwork = new ol.layer.Vector({
+				minZoom: 12,
+				// maxZoom: 17,
+				source: vectorSourcePipeNetwork,
+				style: function(feature) {
+					// console.log(feature.get('NetTypeNo'))
+					var classify = feature.get('NetTypeNo');
+					return stylePipeNetwork[classify];
+				},
+			});
+
+			var layers = [
+				// osmLayer,
+				// imageLayer,
+				// tileLayer,
+				xyzLayer,
+				vectorLayerPipeNetwork
+			];
+
+			var map = new ol.Map({
+				target: 'map',
+				overlays: [popup_overlay],
+				layers: layers,
+				view: new ol.View({
+					center: ol.proj.fromLonLat([108.948301, 34.223445]),
+					zoom: 14
+				})
+			});
+
+			//鼠标移动事件singleclick\pointermove
+			map.on('pointermove', (e) => {
+				map.forEachFeatureAtPixel(e.pixel, function(feature) {
+					if (feature) {
+						// console.log(feature.getGeometry());
+						var type = feature.getGeometry().getType();
+						var coordinate = e.coordinate;
+						var property = feature.getProperties();
+						popup_content.innerHTML = '<code>' + getPopupHtml(type, property) + '</code>';
+						popup_overlay.setPosition(coordinate);
+						// console.log(property)
+					}
+				});
+			});
+
+			function getPopupHtml(type, pro) {
+				var str = "";
+				const keys = Object.keys(pro)
+				for (let i = 0; i < keys.length; i++) {
+					const key = keys[i]
+					const value = pro[key]
+					str += "<div>" + key + "：<span>" + value + "</span></div>";
+				}
+				return str;
+			}
+		</script>
+	</body>
+</html>

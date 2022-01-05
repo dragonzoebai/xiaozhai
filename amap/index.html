@@ -1,0 +1,111 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">
+    <title>小寨</title>
+    <style>
+		html,body,#container {
+			margin:0;
+			height: 100%;
+		}
+		
+		#container .amap-luopan,
+		#container .amap-luopan-bg{background:url(./images/amap/base.png) 11px 16px no-repeat!important}
+		#container .amap-compass{width:94px!important;background:url(./images/amap/compass.png) 7px 8px no-repeat!important}
+		#container .amap-pointers{display:none}
+		#container .amap-pitchUp{cursor:pointer;background:url(./images/amap/pitch.png) 23px 24px no-repeat!important}
+		#container .amap-pitchUp.amap-pitch-active{background:url(./images/amap/pitch_hover.png) 23px 24px no-repeat!important}
+		#container .amap-pitchDown{cursor:pointer;background:url(./images/amap/pitch.png) 25px 25px no-repeat!important}
+		#container .amap-pitchDown.amap-pitch-active{background:url(./images/amap/pitch_hover.png) 25px 25px no-repeat!important}
+		#container .amap-rotateLeft,
+		#container .amap-rotateRight{cursor:pointer;background:url(./images/amap/rotation.png) 23px 31px no-repeat!important}
+		#container .amap-rotate-active{background:url(./images/amap/rotation_hover.png) 23px 31px no-repeat!important}
+		#container .playBox-show .amap-controlbar{bottom:170px!important}
+		#container .amap-controlbar-zoom-bg{display:none}
+		#container .amap-controlbar-zoom{box-shadow:0 2px 4px 0 rgba(0,0,0,.31);position:relative;width:72px;height:140px;border-radius:5px;background:rgba(39,39,39,.8)!important}
+		#container .amap-controlbar-zoom-add,
+		#container .amap-controlbar-zoom-sub{position:absolute;width:72px;height:70px;margin:0}
+		#container .amap-controlbar-zoom-add{position:relative;top:-4px;left:0;height:76px}
+		#container .amap-controlbar-zoom-add:after{content:"";position:absolute;width:56px;height:1px;background:#979797;left:7px;top:76px}
+		#container .amap-controlbar-zoom-sub{top:82px;left:2px}
+    </style>
+</head>
+<body>
+<div id="container"></div>
+<script src="https://cdn.bootcdn.net/ajax/libs/jquery/1.10.0/jquery.min.js"></script>	
+<script src="https://webapi.amap.com/maps?v=1.4.15&key=aafaa3ac90c4c7dd7aa48eb587a5c66f&plugin=AMap.ToolBar,AMap.MouseTool,AMap.DistrictSearch,AMap.ControlBar"></script>
+<script>
+	var map; //地图对象
+	var controlBar; //控制器
+	var myMaxZoom = 17;
+	var infoWindow;//弹窗
+	
+	var leftMapArea = [[108.90313528962353, 34.21355913253762], [108.91798518205906, 34.23479641569657], [108.92626783259806, 34.23150891854132], [108.93438960435633, 34.231460217970714], [108.93439720358674, 34.2134111896274]]
+	initMap();
+	
+	/**
+	 * 高德地图初始化
+	 */
+	function initMap(){
+		map = new AMap.Map('container', {
+			zoom: 17, // 初始化地图层级
+			center: [108.948301, 34.223445], // 初始化地图中心点
+			resizeEnable: true,
+			rotateEnable: true,
+			pitchEnable: true,
+			pitch: 65, //俯视
+			rotation: 0,
+			viewMode: '3D', // 使用3D视图
+			mapStyle: 'amap://styles/0b7f2aecffe8113ba5f3ebe55c8a1b45'//小娇
+		})
+		.on('complete',()=>{
+			map.addControl(controlBar); //添加控制器
+		})
+		//根据缩放比例是否显示排水分区
+		.on('zoomchange', (e)=> {
+		});
+	}
+	
+	//初始化控制器
+	controlBar = new AMap.ControlBar({
+		showZoomBar:true,
+		showControlButton:true,
+		position:{
+			right:'10px',
+			top:'10px'
+		}
+	});
+	
+	var poly1 = {
+	  "type": "Feature",
+	  "properties": {
+		"fill": "#0f0",
+		"stroke": "#00f"
+	  },
+	  "geometry": {
+		"type": "Polygon",
+		"coordinates": leftMapArea
+	  }
+	}
+	var polygons = {
+	  "type": "FeatureCollection",
+	  "features": [poly1]
+	};
+	var geojson = new AMap.GeoJSON({
+		geoJSON: polygons,
+		// 还可以自定义getMarker和getPolyline
+		getPolygon: function(geojson, lnglats) {
+			return new AMap.Polygon({
+				path: lnglats,
+				fillOpacity: 0.5,// 面积越大透明度越高
+				strokeColor: geojson.properties.stroke,
+				fillColor: geojson.properties.fill
+			});
+		}
+	});
+	map.add(geojson);
+</script>
+</body>
+</html>

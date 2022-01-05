@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<title>内涝灾害-tif</title>
+		<link rel="stylesheet"
+			href="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.4.3/css/ol.css"
+			type="text/css">
+		<style>
+			html,
+			body,
+			.map {
+				height: 100%;
+				width: 100%;
+				margin: 0;
+				padding: 0
+			}
+		</style>
+	</head>
+	<body>
+		<div id="map" class="map"></div>
+		<div style="position: absolute;top: 10px;left: 10px;">
+			<button onclick="changeData('P1')">P1</button>
+			<button onclick="changeData('P2')">P2</button>
+			<button onclick="changeData('P3')">P3</button>
+			<button onclick="changeData('P5')">P5</button>
+			<button onclick="changeData('P10')">P10</button>
+			<button onclick="changeData('P20')">P20</button>
+			<button onclick="changeData('P30-before')">P30建设前</button>
+			<button onclick="changeData('P30')">P30</button>
+			<button onclick="changeData('P50-before')">P50建设前</button>
+			<button onclick="changeData('P50')">P50</button>
+		</div>
+	</body>
+	<script src="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.4.3/build/ol.js"></script>
+	<script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	<script>
+		var basePath = 'https://xz.csceccloud.net:10000/arcgis/rest'
+		var urlTile = basePath + '/services/xiaozhaimap_dark/MapServer';
+
+		/**
+		 * 高德底图
+		 */
+		var gaodeMapLayer = new ol.layer.Tile({
+			source: new ol.source.XYZ({
+				url: 'http://t0.tianditu.com/vec_w/wmts?service=wmts&request=GetTile&version=1.0.0&LAYER=vec&tileMatrixSet=w&TileMatrix={z}&TileRow={y}&TileCol={x}&style=default&format=tiles&tk=40b190683706230fade806c1ac8c14e8'
+				// url: 'http://wprd0{1-4}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scl=2&style=7&x={x}&y={y}&z={z}'
+			}),
+			visible: true
+		});
+
+		/**
+		 * wms底图
+		 */
+		var tileLayer = new ol.layer.Tile({
+			source: new ol.source.TileArcGISRest({
+				url: urlTile,
+			}),
+		});
+
+		/**
+		 * 创建地图对象并添加图层
+		 */
+		var map = new ol.Map({
+			target: 'map',
+			controls: ol.control.defaults({
+				zoom: false
+			}),
+			layers: [gaodeMapLayer, tileLayer], // tileLayer
+			view: new ol.View({
+				center: transform([108.948301, 34.223445]),
+				// center: [108.948301, 34.223445],
+				// projection: 'EPSG:4326',
+				zoom: 14.5,
+			})
+		});
+
+		function transform(pois) {
+			return ol.proj.transform(pois, 'EPSG:4326', 'EPSG:3857')
+		}
+		
+		var base_url = 'https://xz.csceccloud.net:10000/geoserver/';
+		// var base_url = 'https://basin.csceccloud.net:9000/tomcat/geoserver/';
+		var tileLayer = new ol.layer.Tile({
+			source: new ol.source.XYZ({
+				// url: url
+			}),
+			visible: true,
+			map: map
+		});
+		function changeData(layer) {
+			url = base_url + '/gwc/service/wmts?' +
+				'layer=xiaozhai:' + layer + '&style=&tilematrixset=EPSG:900913&' +
+				'Service=WMTS&Request=GetTile&Version=1.0.0&Format=image/png&' +
+				'TileMatrix=EPSG:900913:{z}&TileCol={x}&TileRow={y}';
+			tileLayer.getSource().setUrl(url)
+		}
+		changeData('P1')
+
+		new ol.layer.Image({
+			source: new ol.source.ImageWMS({
+				url: base_url + "/xiaozhai/wms",
+				params: {
+					LAYERS: 'xiaozhai:1010',
+					FORMAT: 'image/png',
+				}
+			}),
+			// map: map
+		});
+
+		var wmsLayer = new ol.layer.Tile({
+			source: new ol.source.TileWMS({
+				url: base_url + "/xiaozhai/wms",
+				params: {
+					'LAYERS': 'xiaozhai:1010-4326', //
+					'TILED': true
+				}
+			}),
+			// map: map
+		})
+	</script>
+</html>

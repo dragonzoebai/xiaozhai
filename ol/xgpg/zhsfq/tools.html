@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<title>子汇水分区-结果合成工具</title>
+	</head>
+	<body>
+	</body>
+	<script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	<script src="https://cdn.bootcdn.net/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+	<script>
+		function mergeData(p) {
+			$.getJSON("./catchment_total.geojson", (p1) => {
+				$.getJSON({
+					url: "./zjs/"+p + "A-TotalRunOff.json",
+					async: false,
+					success: (res) => {
+						// res = JSON.parse(res)
+						p1.features.forEach(f => {
+							f.properties.zjs = res[f.properties.MUID]*100;
+						})
+					}
+				})
+				// console.log(JSON.stringify(p1))
+				var blob = new Blob([JSON.stringify(p1)], {type: "text/plain;charset=utf-8"});
+				saveAs(blob, "catchment_total_P"+p+".json");
+			})
+		}
+		
+		var list = [1,2,3,5,10,20,30,50] //
+		list.forEach(p => {
+			mergeData(p)
+		})
+	</script>
+
+</html>

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no">
+		<title>arcgis-dem</title>
+		<!--cdn-->
+		<link rel="stylesheet" href="https://js.arcgis.com/4.11/esri/themes/light/main.css">
+		<style>
+			html,
+			body,
+			#viewDiv {
+				padding: 0;
+				margin: 0;
+				height: 100%;
+				width: 100%;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="viewDiv"></div>
+	</body>
+	<!--cdn-->
+	<script src="https://js.arcgis.com/4.11/"></script>
+	<script>
+		require([
+			"esri/Map",
+			"esri/views/MapView",
+			"esri/views/SceneView",
+			"esri/layers/WebTileLayer",
+			"esri/layers/TileLayer",
+			"esri/layers/FeatureLayer",
+			"esri/layers/MapImageLayer"
+		], function(Map, MapView, SceneView, WebTileLayer, TileLayer, FeatureLayer, MapImageLayer) {
+
+			var map = new Map();
+
+			// 底图
+			var arcgisIP = "https://xz.csceccloud.net:10000/arcgis/rest/";
+			var myTileLayer = new TileLayer({
+				url: arcgisIP + "services/xiaozhaimap_dark/MapServer",
+			});
+			map.add(myTileLayer);
+
+			// dem
+			var base_url = 'https://xz.csceccloud.net:10000/geoserver/';
+			var demLayer = new WebTileLayer({
+				urlTemplate: base_url + 'gwc/service/wmts?' +
+					'layer=xiaozhai:xiaozhai32649_dem&style=&tilematrixset=EPSG:900913&' +
+					'Service=WMTS&Request=GetTile&Version=1.0.0&Format=image/png&' +
+					'TileMatrix=EPSG:900913:{level}&TileCol={col}&TileRow={row}'
+			});
+			map.add(demLayer);
+
+			var view = new SceneView({
+				container: "viewDiv",
+				map: map,
+				camera: {
+					position: { // observation point
+						x: 108.944,
+						y: 34.16,
+						z: 3000 // altitude in meters
+					},
+					tilt: 65 // perspective in degrees
+				}
+			});
+			view.when(function() {
+				console.log("loaded");
+			}, function(error) {
+				console.error("The view's resources failed to load: ", error);
+			});
+
+			view.on("mouse-wheel", function(event) {
+				console.log(view.scale);
+			});
+		});
+	</script>
+</html>

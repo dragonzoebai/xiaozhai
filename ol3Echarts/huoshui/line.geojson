@@ -1,0 +1,18 @@
+{
+"type": "FeatureCollection",
+"name": "line",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+"features": [
+{ "type": "Feature", "properties": { "id": null, "code": "YSG001", "type": "长安中路", "length": null, "describe": null, "diameter": 1200 }, "geometry": { "type": "LineString", "coordinates": [ [ 108.942084899522087, 34.217088657184703 ], [ 108.942106004921783, 34.22002230774315 ] ] } },
+{ "type": "Feature", "properties": { "id": null, "code": "YWG002", "type": "长安中路", "length": null, "describe": "3200x1800", "diameter": null }, "geometry": { "type": "LineString", "coordinates": [ [ 108.942106004921783, 34.22002230774315 ], [ 108.942116557621645, 34.225129814470804 ] ] } },
+{ "type": "Feature", "properties": { "id": null, "code": "YWG003", "type": "长安中路", "length": null, "describe": null, "diameter": 1800 }, "geometry": { "type": "LineString", "coordinates": [ [ 108.942116557621645, 34.225129814470804 ], [ 108.942132386671418, 34.227124274742557 ] ] } },
+{ "type": "Feature", "properties": { "id": null, "code": "YSG005", "type": "兴善寺东街", "length": null, "describe": null, "diameter": 2000 }, "geometry": { "type": "LineString", "coordinates": [ [ 108.942132386671418, 34.227124274742557 ], [ 108.945672817471277, 34.227155932842109 ] ] } },
+{ "type": "Feature", "properties": { "id": null, "code": "YSG006", "type": "粤育才中学进水暗涵", "length": null, "describe": "3500X4000", "diameter": null }, "geometry": { "type": "LineString", "coordinates": [ [ 108.945672817471277, 34.227155932842109 ], [ 108.945651712071566, 34.228242860926713 ] ] } },
+{ "type": "Feature", "properties": { "id": null, "code": "YSG007", "type": "翠华路", "length": null, "describe": null, "diameter": 1200 }, "geometry": { "type": "LineString", "coordinates": [ [ 108.951811097596888, 34.217057551701885 ], [ 108.951797130411308, 34.220018595045701 ] ] } },
+{ "type": "Feature", "properties": { "id": null, "code": "YWG008", "type": "翠华路", "length": null, "describe": null, "diameter": 1800 }, "geometry": { "type": "LineString", "coordinates": [ [ 108.951797130411308, 34.220018595045701 ], [ 108.951825064782469, 34.221443247975287 ] ] } },
+{ "type": "Feature", "properties": { "id": null, "code": "YWG009", "type": "翠华路", "length": null, "describe": null, "diameter": 1800 }, "geometry": { "type": "LineString", "coordinates": [ [ 108.951825064782469, 34.221443247975287 ], [ 108.951814589393308, 34.224505553414595 ] ] } },
+{ "type": "Feature", "properties": { "id": null, "code": "YWG010", "type": "翠华路", "length": null, "describe": null, "diameter": 1800 }, "geometry": { "type": "LineString", "coordinates": [ [ 108.951814589393308, 34.224505553414595 ], [ 108.951793638614959, 34.22713836789719 ] ] } },
+{ "type": "Feature", "properties": { "id": null, "code": "YWG011", "type": "兴善寺东街", "length": null, "describe": null, "diameter": 2600 }, "geometry": { "type": "LineString", "coordinates": [ [ 108.951793638614959, 34.22713836789719 ], [ 108.948902431199045, 34.227166302268351 ] ] } },
+{ "type": "Feature", "properties": { "id": null, "code": "YWG012", "type": "兴善寺东街", "length": null, "describe": null, "diameter": 2600 }, "geometry": { "type": "LineString", "coordinates": [ [ 108.948902431199045, 34.227166302268351 ], [ 108.945672817471277, 34.227155932842109 ] ] } }
+]
+}

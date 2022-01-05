@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<title>检查井-平均水深</title>
+	</head>
+	<body>
+	</body>
+	<script src="https://cdn.bootcdn.net/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+	<script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	<script>
+		function mergeData(p) {
+			$.getJSON("manhole.geojson", (p1) => {
+				$.getJSON({
+					url: p+"A-WaterLevel-waterdepth-average.json",
+					async: false,
+					success: (res) => {
+						res = JSON.parse(res)
+						p1.features.forEach(f => {
+							f.properties.AvgWater = res[f.properties.MUID];
+							f.properties.ColorValueAvg = -res[f.properties.MUID];
+						})
+					}
+				})
+				
+				$.getJSON({
+					url: p+"A-WaterLevel-waterdepth-max.json",
+					async: false,
+					success: (res) => {
+						res = JSON.parse(res)
+						p1.features.forEach(f => {
+							f.properties.MaxWater = res[f.properties.MUID];
+							f.properties.ColorValueMax = -res[f.properties.MUID];
+						})
+					}
+				})
+				
+				// console.log(JSON.stringify(p1))
+				var blob = new Blob([JSON.stringify(p1)], {type: "text/plain;charset=utf-8"});
+				saveAs(blob, "manhole_deep_P"+p+".json");
+			})
+		}
+		
+		
+		var list = [1,2,3,5,10,20,30,50]
+		list.forEach(p=>{
+			mergeData(p)
+		})
+	</script>
+
+</html>

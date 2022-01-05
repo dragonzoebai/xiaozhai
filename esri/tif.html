@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+		<title>dem</title>
+
+		<style>
+			html,
+			body,
+			#viewDiv {
+				padding: 0;
+				margin: 0;
+				height: 100%;
+				width: 100%;
+			}
+		</style>
+
+		<link rel="stylesheet" href="https://js.arcgis.com/4.19/esri/themes/light/main.css" />
+		<script src="https://js.arcgis.com/4.19/"></script>
+
+		<script>
+			require([
+					"esri/Map",
+					"esri/views/SceneView",
+					"esri/layers/WebTileLayer",
+					"esri/layers/TileLayer",
+					"esri/layers/GeoJSONLayer"
+				],
+				function(Map, SceneView, WebTileLayer, TileLayer, GeoJSONLayer) {
+					var map = new Map({
+						// ground: "world-elevation"
+					});
+
+					var view = new SceneView({
+						container: "viewDiv",
+						map: map,
+						scale: 20000,
+						center: [108.948301, 34.223445],
+					});
+
+					// 天地图卫星影像底图
+					var imgLayer = new WebTileLayer({
+						urlTemplate: "http://t0.tianditu.com/img_w/wmts?service=wmts&request=GetTile&version=1.0.0&LAYER=img&tileMatrixSet=w&TileMatrix={level}&TileRow={row}&TileCol={col}&style=default&format=tiles&tk=f484caa12ea994ef1543e56b4fe79b50",
+					});
+					// map.add(imgLayer);
+					
+					// 底图
+					var arcgisIP = "https://xz.csceccloud.net:10000/arcgis/rest/";
+					var myTileLayer = new TileLayer({
+						url: arcgisIP + "services/xiaozhaimap_dark/MapServer",
+					});
+					map.add(myTileLayer);
+					
+					// dem
+					var base_url = 'https://xz.csceccloud.net:10000/geoserver/';
+					var wmtsLayer = new WebTileLayer({
+						urlTemplate: base_url + 'gwc/service/wmts?' +
+							'layer=xiaozhai:xiaozhai32649_dem&style=&tilematrixset=EPSG:900913&' +
+							'Service=WMTS&Request=GetTile&Version=1.0.0&Format=image/png&' +
+							'TileMatrix=EPSG:900913:{level}&TileCol={col}&TileRow={row}'
+					});
+					map.add(wmtsLayer);
+				});
+		</script>
+	</head>
+
+	<body>
+		<div id="viewDiv"></div>
+	</body>
+</html>

@@ -1,0 +1,19 @@
+{
+"type": "FeatureCollection",
+"name": "points",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+"features": [
+{ "type": "Feature", "properties": { "id": null, "code": "YS001", "type": null, "describe": null }, "geometry": { "type": "Point", "coordinates": [ 108.942071708647291, 34.217088657184718 ] } },
+{ "type": "Feature", "properties": { "id": null, "code": "YW002", "type": null, "describe": null }, "geometry": { "type": "Point", "coordinates": [ 108.942071708647291, 34.219958991544061 ] } },
+{ "type": "Feature", "properties": { "id": null, "code": "YW003", "type": null, "describe": null }, "geometry": { "type": "Point", "coordinates": [ 108.942090175872039, 34.225098156371253 ] } },
+{ "type": "Feature", "properties": { "id": null, "code": "YW004", "type": null, "describe": null }, "geometry": { "type": "Point", "coordinates": [ 108.942127110321508, 34.227134827442399 ] } },
+{ "type": "Feature", "properties": { "id": null, "code": "YS005", "type": null, "describe": null }, "geometry": { "type": "Point", "coordinates": [ 108.945635883021808, 34.227150656492178 ] } },
+{ "type": "Feature", "properties": { "id": null, "code": "TXC", "type": null, "describe": "调蓄池" }, "geometry": { "type": "Point", "coordinates": [ 108.945635883021808, 34.228253413626554 ] } },
+{ "type": "Feature", "properties": { "id": null, "code": "YS005", "type": null, "describe": null }, "geometry": { "type": "Point", "coordinates": [ 108.951803936084431, 34.217083380834765 ] } },
+{ "type": "Feature", "properties": { "id": null, "code": "YS006", "type": null, "describe": null }, "geometry": { "type": "Point", "coordinates": [ 108.951793383384569, 34.219964267893964 ] } },
+{ "type": "Feature", "properties": { "id": null, "code": "YW007", "type": null, "describe": null }, "geometry": { "type": "Point", "coordinates": [ 108.951793383384569, 34.22144692222296 ] } },
+{ "type": "Feature", "properties": { "id": null, "code": "YW008", "type": null, "describe": null }, "geometry": { "type": "Point", "coordinates": [ 108.951805638687105, 34.2244915521959 ] } },
+{ "type": "Feature", "properties": { "id": null, "code": "YW009", "type": null, "describe": null }, "geometry": { "type": "Point", "coordinates": [ 108.95179227048412, 34.227158508687701 ] } },
+{ "type": "Feature", "properties": { "id": null, "code": "YW010", "type": null, "describe": null }, "geometry": { "type": "Point", "coordinates": [ 108.948904738643378, 34.227151824586223 ] } }
+]
+}

@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<title>热图</title>
+		<link rel="stylesheet"
+			href="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.9.0/css/ol.css"
+			type="text/css">
+		<style>
+			html,
+			body,
+			.map {
+				height: 100%;
+				width: 100%;
+				margin: 0;
+				padding: 0
+			}
+		</style>
+	</head>
+	<body>
+		<div id="map" class="map"></div>
+	</body>
+	<script src="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.9.0/build/ol.js"></script>
+	<script>
+		var gaodeMapLayer = new ol.layer.Tile({
+			source: new ol.source.XYZ({
+				url: 'http://t0.tianditu.com/vec_w/wmts?service=wmts&request=GetTile&version=1.0.0&LAYER=vec&tileMatrixSet=w&TileMatrix={z}&TileRow={y}&TileCol={x}&style=default&format=tiles&tk=40b190683706230fade806c1ac8c14e8'
+				// url: 'http://wprd0{1-4}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scl=2&style=7&x={x}&y={y}&z={z}'
+			}),
+			visible: true
+		});
+
+		/**
+		 * 创建地图对象并添加图层
+		 */
+		var map = new ol.Map({
+			target: 'map',
+			controls: ol.control.defaults({
+				zoom: false
+			}),
+			layers: [gaodeMapLayer],
+			view: new ol.View({
+				center: transform([108.948301, 34.223445]),
+				// center: [108.948301, 34.223445],
+				// projection: 'EPSG:4326',
+				zoom: 14.5,
+			})
+		});
+
+		function transform(pois) {
+			return ol.proj.transform(pois, 'EPSG:4326', 'EPSG:3857')
+		}
+
+		var base_url = 'http://localhost:8080/geoserver';
+		new ol.layer.Image({
+			source: new ol.source.ImageWMS({
+				url: base_url + "/test/wms",
+				params: {
+					VERSION: '1.1.1',
+					LAYERS: 'manhole_deep_P1',
+					FORMAT: 'image/png',
+				}
+			}),
+			map: map
+		});
+
+		// 瓦片有点问题
+		new ol.layer.Tile({
+			source: new ol.source.TileWMS({
+				url: base_url + "/test/wms",
+				params: {
+					VERSION: '1.1.1',
+					LAYERS: 'manhole_deep_P1',
+					FORMAT: 'image/png',
+					TILED: true
+				}
+			}),
+			// map: map
+		})
+
+		// 瓦片有点问题
+		new ol.layer.Tile({
+			source: new ol.source.XYZ({
+				url: base_url + '/gwc/service/wmts?' +
+					'layer=test:manhole_deep_P1&style=&tilematrixset=EPSG:900913&' +
+					'Service=WMTS&Request=GetTile&Version=1.0.0&Format=image/png&' +
+					'TileMatrix=EPSG:900913:{z}&TileCol={x}&TileRow={y}'
+			}),
+			visible: true,
+			// map: map
+		});
+	</script>
+</html>
