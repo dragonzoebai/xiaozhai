@@ -1,0 +1,72 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">
+		<title>tif-xyz</title>
+		<style>
+			html,
+			body,
+			#container {
+				margin: 0;
+				height: 100%;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="container"></div>
+		<div style="position: absolute;top: 10px;left: 10px;">
+			<span id="spanMarker" style="background-color: #000000;color: #ffffff;"></span>
+		</div>
+		<script src="https://cdn.bootcdn.net/ajax/libs/jquery/1.10.0/jquery.min.js"></script>
+		<script
+			src="https://webapi.amap.com/maps?v=1.4.15&key=aafaa3ac90c4c7dd7aa48eb587a5c66f&plugin=AMap.ToolBar,AMap.MouseTool,AMap.DistrictSearch,AMap.ControlBar">
+		</script>
+		<script>
+			var map; //地图对象
+			initMap();
+			/**
+			 * 高德地图初始化
+			 */
+			function initMap() {
+				map = new AMap.Map('container', {
+						zoom: 14, // 初始化地图层级
+						center: [108.948301, 34.223445], // 初始化地图中心点
+						resizeEnable: true,
+						rotateEnable: true,
+						pitchEnable: true,
+						// pitch: 65, //俯视
+						rotation: 0,
+						viewMode: '3D', // 使用3D视图
+						mapStyle: 'amap://styles/0b7f2aecffe8113ba5f3ebe55c8a1b45' //小娇
+					})
+					.on('complete', () => {})
+					//根据缩放比例是否显示排水分区
+					.on('zoomchange', (e) => {});
+			}
+
+			var xyzTileLayer = new AMap.TileLayer({
+				// getTileUrl: 'https://xz.csceccloud.net:10000/geoserver/gwc/service/wmts?TileMatrixSet=EPSG:900913&layer=xiaozhai:A50-4&style=&Service=WMTS&Request=GetTile&Version=1.0.0&Format=image/png&TileMatrix=EPSG:900913:[z]&TileRow=[y]&TileCol=[x]',
+				zIndex: 100
+			});
+			xyzTileLayer.setMap(map);
+			
+			function changeData2(layer) {
+				xyzTileLayer.setTileUrl('https://xz.csceccloud.net:10000/geoserver/gwc/service/wmts?TileMatrixSet=EPSG:900913&layer=xiaozhai:'+layer+'&style=&Service=WMTS&Request=GetTile&Version=1.0.0&Format=image/png&TileMatrix=EPSG:900913:[z]&TileRow=[y]&TileCol=[x]')
+				xyzTileLayer.reload()
+			}
+
+			var tifIndex = 0
+			setInterval(() => {
+				$("#spanMarker").html("运行中: " + tifIndex + " 帧")
+				// changeData("A50-"+tifIndex)
+				changeData2("dpA50-" + tifIndex)
+				if (tifIndex == 11) {
+					tifIndex = 0
+				}
+				tifIndex++;
+			}, 1000)
+		</script>
+	</body>
+</html>
