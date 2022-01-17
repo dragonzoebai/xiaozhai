@@ -1,0 +1,129 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">
+		<title>坐标转换</title>
+		<style>
+			html,
+			body,
+			#container {
+				margin: 0;
+				height: 100%;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="container"></div>
+		<script src="https://cdn.bootcdn.net/ajax/libs/jquery/1.10.0/jquery.min.js"></script>
+		<script
+			src="https://webapi.amap.com/maps?v=1.4.15&key=aafaa3ac90c4c7dd7aa48eb587a5c66f&plugin=AMap.ToolBar,AMap.MouseTool,AMap.DistrictSearch,AMap.ControlBar">
+		</script>
+		<script>
+			var map; //地图对象
+
+			var poiArrXY = [{
+				"lngLat": [4059412.457300066, 12128122.94440226],
+				"name": "YL4陕西学前师范雁塔校区雨量监测站",
+			}, {
+				"lngLat": [4059195.0895008575, 12125083.97536365],
+				"name": "YL3西安机电信息研究所雨量监测站",
+			}, {
+				"lngLat": [4058098.6958763585, 12128700.402264439],
+				"name": "YL2西安交大继续教育学院雨量监测站",
+			}, {
+				"lngLat": [4057751.1462633573, 12125217.74016306],
+				"name": "YL1西安市石油大学雨量监测站",
+			}]
+			
+			var poiArrLonLat = [];
+			poiArrXY.forEach(e => {
+				var mercatorXY = {
+					x: e.lngLat[1],
+					y: e.lngLat[0]
+				}
+				var lonlat = mercatorTolonlat(mercatorXY)
+				poiArrLonLat.push({
+					"lngLat": [lonlat.x, lonlat.y],
+					"name": e.name,
+				})
+			})
+
+			function mercatorTolonlat(mercator) {
+				var lonlat = {
+					x: 0,
+					y: 0
+				};
+				var x = mercator.x / 20037508.34 * 180;
+				var y = mercator.y / 20037508.34 * 180;
+				y = 180 / Math.PI * (2 * Math.atan(Math.exp(y * Math.PI / 180)) - Math.PI / 2);
+				lonlat.x = x;
+				lonlat.y = y;
+				return lonlat;
+			}
+
+			initMap();
+			/**
+			 * 高德地图初始化
+			 */
+			function initMap() {
+				map = new AMap.Map('container', {
+						zoom: 15, // 初始化地图层级
+						center: [108.940301, 34.223445], // 初始化地图中心点
+						resizeEnable: true,
+						rotateEnable: true,
+						pitchEnable: true,
+						pitch: 45, //俯视
+						rotation: 0,
+						viewMode: '3D', // 使用3D视图
+						mapStyle: 'amap://styles/0b7f2aecffe8113ba5f3ebe55c8a1b45', //小娇
+						// mapStyle: 'amap://styles/darkblue',
+						features: ['bg', 'road', 'building', 'point'], // 'bg', 'road', 'building', 'point'
+						// showLabel: false,
+					})
+					.on('complete', () => {})
+					//根据缩放比例是否显示排水分区
+					.on('zoomchange', (e) => {});
+			}
+
+			function addPoints84() {
+				poiArrLonLat.forEach(e => {
+					var marker = new AMap.Marker({
+						icon: "https://webapi.amap.com/theme/v1.3/markers/n/mark_b.png",
+						position: e.lngLat,
+						anchor: 'bottom-center',
+						label: {
+							content: "84坐标：" + e.name,
+							direction: "top",
+						}
+					});
+					map.add(marker)
+				})
+			}
+
+			function addPointsGaode() {
+				poiArrLonLat.forEach(e => {
+					AMap.convertFrom(e.lngLat, 'gps', function(status, result) {
+						if (result.info === 'ok') {
+							var lnglats = result.locations; // Array.<LngLat>
+							var marker = new AMap.Marker({
+								icon: "https://webapi.amap.com/theme/v1.3/markers/n/mark_r.png",
+								position: [lnglats[0].lng, lnglats[0].lat],
+								anchor: 'bottom-center',
+								label: {
+									content: "高德坐标：" + e.name,
+									direction: "top",
+								}
+							});
+							map.add(marker)
+						}
+					});
+				})
+			}
+
+			addPoints84()
+			addPointsGaode()
+		</script>
+	</body>
+</html>

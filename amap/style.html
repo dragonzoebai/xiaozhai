@@ -1,0 +1,50 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">
+		<title>小寨样式</title>
+		<style>
+			html,
+			body,
+			#container {
+				margin: 0;
+				height: 100%;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="container"></div>
+		<script src="https://cdn.bootcdn.net/ajax/libs/jquery/1.10.0/jquery.min.js"></script>
+		<script
+			src="https://webapi.amap.com/maps?v=1.4.15&key=3ffd29cf07acf4ff40d1622d9903bdd8&plugin=AMap.ToolBar,AMap.MouseTool,AMap.DistrictSearch,AMap.ControlBar">
+		</script>
+		<script>
+			var map; //地图对象
+			initMap();
+			/**
+			 * 高德地图初始化
+			 */
+			function initMap() {
+				map = new AMap.Map('container', {
+						zoom: 17, // 初始化地图层级
+						center: [108.948301, 34.223445], // 初始化地图中心点
+						resizeEnable: true,
+						rotateEnable: true,
+						pitchEnable: true,
+						pitch: 65, //俯视
+						rotation: 0,
+						viewMode: '3D', // 使用3D视图
+						mapStyle: 'amap://styles/647d02cbf795e4bf8e8de8edb3c54e2e', //小娇
+						// mapStyle: 'amap://styles/darkblue',
+						// features: ['bg', 'road', 'building', 'point'], // 'bg', 'road', 'building', 'point'
+						// showLabel: false,
+					})
+					.on('complete', () => {})
+					//根据缩放比例是否显示排水分区
+					.on('zoomchange', (e) => {});
+			}
+		</script>
+	</body>
+</html>
